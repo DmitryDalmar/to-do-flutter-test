@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:test_list_app/page/todo.dart';
-import 'package:test_list_app/page/login.dart';
+import 'package:to_do_flutter_test/page/todo.dart';
+import 'package:to_do_flutter_test/page/login.dart';
 
 void main() {
   return runApp(MaterialApp(
