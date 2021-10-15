@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -12,11 +14,25 @@ class _TodoState extends State<Todo> {
   List todoList = [];
   String userToDo = '';
 
+  void getTasks() async {
+    var response = await http.get(Uri.parse('http://r9wnexeh1u.laravel-sail.site:8080/api/task'), headers: {
+      'Accept': 'application/json',
+    });
+
+    var result = jsonDecode(response.body);
+
+    result['data'].forEach((element) {
+      element['uniqueKey'] = UniqueKey();
+
+      todoList.add(element);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
 
-    todoList.addAll(['Новый парк', 'Плиточка', 'Новая церковь']);
+    this.getTasks();
   }
 
   @override
@@ -31,10 +47,10 @@ class _TodoState extends State<Todo> {
           itemCount: todoList.length,
           itemBuilder: (BuildContext context, int index) {
             return Dismissible(
-                key: Key(todoList[index]),
+                key: Key(todoList[index]['uniqueKey'].toString()),
                 child: Card(
                   child: ListTile(
-                      title: Text(todoList[index]),
+                      title: Text(todoList[index]['title']),
                       trailing: IconButton(
                         icon: const Icon(
                           Icons.delete,
@@ -69,7 +85,7 @@ class _TodoState extends State<Todo> {
                 ElevatedButton(
                   onPressed: () {
                     setState(() => {
-                      todoList.add(userToDo)
+                      todoList.add({'title': userToDo, 'uniqueKey': UniqueKey()})
                     });
                     Navigator.of(context).pop();
                   },
