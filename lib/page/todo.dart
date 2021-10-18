@@ -6,13 +6,25 @@ import 'package:http/http.dart' as http;
 class Todo extends StatefulWidget {
   const Todo({var key}) : super(key: key);
 
-  final String serverHost = 'http://ooake9xses.laravel-sail.site:8080';
+  @override
+  State<Todo> createState() => _TodoState();
+}
+
+class _TodoState extends State<Todo> {
+  String userToDo = '';
+  String serverHost = 'http://t0605klrit.laravel-sail.site:8080';
+
+  @override
+  void initState() {
+    super.initState();
+
+    getTasks();
+  }
 
   Future<List> getTasks() async {
-    todoList = [];
+    var todoList = [];
 
-    var response =
-    await http.get(Uri.parse(serverHost + '/api/task'), headers: {
+    var response = await http.get(Uri.parse(serverHost + '/api/task'), headers: {
       'Accept': 'application/json',
     });
 
@@ -26,34 +38,13 @@ class Todo extends StatefulWidget {
   }
 
   void addTask(task) async {
-    var response = await http.post(Uri.parse(serverHost + '/api/task'),
+    await http.post(Uri.parse(serverHost + '/api/task'),
         headers: {
           'Accept': 'application/json',
         },
         body: task);
 
-    var result = jsonDecode(response.body)['data'];
-
-    // todoList.add(result);
-  }
-
-  @override
-  State<Todo> createState() => _TodoState();
-}
-
-class _TodoState extends State<Todo> {
-  List todoList = [];
-  String userToDo = '';
-
-  @override
-  void initState() {
-    super.initState();
-
-    this.getTasks();
-  }
-
-  void setToDoList(listData) {
-    todoList = listData;
+    getTasks();
   }
 
   @override
@@ -97,21 +88,23 @@ class _TodoState extends State<Todo> {
         builder: (context, snapshot) {
           // operation for completed state
           if (snapshot.hasData) {
+            List<dynamic> toDoList = snapshot.data ?? [];
+
             return ListView.builder(
-                itemCount: todoList.length,
+                itemCount: toDoList.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Dismissible(
-                    key: Key(todoList[index]['id'].toString()),
+                    key: Key(toDoList[index]['id'].toString()),
                     child: Card(
                       child: ListTile(
-                        title: Text(todoList[index]['title']),
+                        title: Text(toDoList[index]['title']),
                         trailing: IconButton(
                           icon: const Icon(
                             Icons.delete,
                           ),
                           onPressed: () => {
                             setState(() {
-                              todoList.removeAt(index);
+                              toDoList.removeAt(index);
                             })
                           },
                         ),
@@ -119,7 +112,7 @@ class _TodoState extends State<Todo> {
                     ),
                     onDismissed: (direction) {
                       setState(() {
-                        todoList.removeAt(index);
+                        toDoList.removeAt(index);
                       });
                     },
                   );
