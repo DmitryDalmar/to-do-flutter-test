@@ -1,9 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:to_do_flutter_test/models/task.dart';
 import 'package:to_do_flutter_test/services/task_service.dart';
+import 'package:to_do_flutter_test/views/bottom_menu.dart';
 
 class Todo extends StatefulWidget {
   const Todo({var key}) : super(key: key);
@@ -63,7 +61,7 @@ class _TodoState extends State<Todo> {
     return Scaffold(
       backgroundColor: Colors.grey[1000],
       appBar: AppBar(
-        title: const Text('Распил налогов'),
+        title: const Text('Задачи'),
         centerTitle: true,
       ),
       body: Builder(
@@ -120,6 +118,7 @@ class _TodoState extends State<Todo> {
           Icons.add,
         ),
       ),
+      bottomNavigationBar: const BottomMenu(),
     );
   }
 }
