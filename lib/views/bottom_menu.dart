@@ -14,30 +14,22 @@ class _BottomMenuState extends State<BottomMenu> {
           icon: Icon(Icons.home),
           label: 'Задачи',
         ),
-        onTap: () => {}),
+        route: '/todo'),
     _ButtonData(
         bottomNavigationBarItem: const BottomNavigationBarItem(
           icon: Icon(Icons.settings),
           label: 'Настройки',
         ),
-        onTap: () => {}),
+        route: '/settings'),
     _ButtonData(
         bottomNavigationBarItem: const BottomNavigationBarItem(
           icon: Icon(Icons.person),
           label: 'Пользователь',
         ),
-        onTap: () => {})
+        route: '/user'),
   ];
 
   int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    _buttons[index].onTap();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,14 +37,20 @@ class _BottomMenuState extends State<BottomMenu> {
       items: _buttons.map((e) => e.bottomNavigationBarItem).toList(),
       currentIndex: _selectedIndex,
       selectedItemColor: Colors.amber[800],
-      onTap: _onItemTapped,
+      onTap: (index) {
+        setState(() {
+          _selectedIndex = index;
+        });
+
+        Navigator.pushNamed(context, _buttons[index].route);
+      },
     );
   }
 }
 
 class _ButtonData {
   BottomNavigationBarItem bottomNavigationBarItem;
-  Function onTap;
+  String route;
 
-  _ButtonData({required this.bottomNavigationBarItem, required this.onTap});
+  _ButtonData({required this.bottomNavigationBarItem, required this.route});
 }

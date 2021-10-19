@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:to_do_flutter_test/models/task.dart';
 
 class TaskService {
-  static const _apiUrl = 'http://5celnmxmtw.laravel-sail.site:8080/api/task';
+  static const _apiUrl = 'http://62pi7hkmqf.laravel-sail.site:8080/api/task';
   static const _headers = {'Accept': 'application/json'};
   static const _statusCodeRemove = 200;
 
