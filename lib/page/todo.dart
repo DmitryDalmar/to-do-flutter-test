@@ -39,8 +39,23 @@ class _TodoState extends State<Todo> {
   }
 
   _addTask(String title) async {
-    await _taskService.addTask(title);
-    _getTasks();
+    Task task = await _taskService.addTask(title);
+
+    // _getTasks();
+
+    setState(() {
+      _list.insert(0, task);
+    });
+  }
+
+  _removeTask(int id) async {
+    var success = await _taskService.removeTask(id);
+
+    if (success) {
+      setState(() {
+        _list.removeWhere((task) => task.id == id);
+      });
+    }
   }
 
   @override
@@ -59,28 +74,21 @@ class _TodoState extends State<Todo> {
             return ListView.builder(
                 itemCount: _list.length,
                 itemBuilder: (BuildContext context, int index) {
+                  Task task = _list[index];
+
                   return Dismissible(
-                    key: Key(_list[index].id.toString()),
+                    key: Key(task.id.toString()),
                     child: Card(
                       child: ListTile(
-                        title: Text(_list[index].title),
+                        title: Text(task.title),
                         trailing: IconButton(
                           icon: const Icon(
                             Icons.delete,
                           ),
-                          onPressed: () => {
-                            setState(() {
-                              _list.removeAt(index);
-                            })
-                          },
+                          onPressed: () => _removeTask(task.id),
                         ),
                       ),
                     ),
-                    onDismissed: (direction) {
-                      setState(() {
-                        _list.removeAt(index);
-                      });
-                    },
                   );
                 });
           }
@@ -99,10 +107,8 @@ class _TodoState extends State<Todo> {
                   actions: [
                     ElevatedButton(
                       onPressed: () {
-                        setState(() => {
-                              _addTask(_newTaskTitle)
-                            });
-                        Navigator.of(context).pop();
+                        _addTask(_newTaskTitle);
+                        Navigator.pop(context);
                       },
                       child: const Text('Поставить народ на счетчик'),
                     )
