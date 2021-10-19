@@ -1,8 +1,11 @@
 class Task {
   int id;
-  String title = '';
-  String description = '';
-  int? userId;
+  String title;
+  String? description;
 
-  Task(this.id, this.title, this.description, this.userId);
+  Task({
+    required this.id,
+    required this.title,
+    this.description
+  });
 }

@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:to_do_flutter_test/models/task.dart';
+import 'package:to_do_flutter_test/services/task_service.dart';
 
 class Todo extends StatefulWidget {
   const Todo({var key}) : super(key: key);
@@ -11,40 +13,34 @@ class Todo extends StatefulWidget {
 }
 
 class _TodoState extends State<Todo> {
-  String userToDo = '';
-  String serverHost = 'http://t0605klrit.laravel-sail.site:8080';
+  static final _taskService = TaskService();
+
+  List<Task> _list = <Task>[];
+  bool _isLoading = false;
+  String _newTaskTitle = '';
 
   @override
   void initState() {
     super.initState();
 
-    getTasks();
+    _getTasks();
   }
 
-  Future<List> getTasks() async {
-    var todoList = [];
-
-    var response = await http.get(Uri.parse(serverHost + '/api/task'), headers: {
-      'Accept': 'application/json',
+  _getTasks() async {
+    setState(() {
+      _isLoading = true;
     });
 
-    var result = jsonDecode(response.body);
+    _list = await _taskService.getTasks();
 
-    result['data'].forEach((element) {
-      todoList.add(element);
+    setState(() {
+      _isLoading = false;
     });
-
-    return todoList;
   }
 
-  void addTask(task) async {
-    await http.post(Uri.parse(serverHost + '/api/task'),
-        headers: {
-          'Accept': 'application/json',
-        },
-        body: task);
-
-    getTasks();
+  _addTask(String title) async {
+    await _taskService.addTask(title);
+    _getTasks();
   }
 
   @override
@@ -55,56 +51,26 @@ class _TodoState extends State<Todo> {
         title: const Text('Распил налогов'),
         centerTitle: true,
       ),
-      /*body: ListView.builder(
-          itemCount: todoList.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Dismissible(
-                key: Key(todoList[index]['id'].toString()),
-                child: Card(
-                  child: ListTile(
-                      title: Text(todoList[index]['title']),
-                      trailing: IconButton(
-                        icon: const Icon(
-                          Icons.delete,
-                        ),
-                        onPressed: () => {
-                          setState(() {
-                            todoList.removeAt(index);
-                          })
-                        },
-                      ),
-                  ),
-                ),
-                onDismissed: (direction) {
-                  setState(() {
-                    todoList.removeAt(index);
-                  });
-                },
-            );
-          }
-      ),*/
-      body: FutureBuilder<List>(
-        future: getTasks(),
-        builder: (context, snapshot) {
-          // operation for completed state
-          if (snapshot.hasData) {
-            List<dynamic> toDoList = snapshot.data ?? [];
-
+      body: Builder(
+        builder: (context) {
+          if (_isLoading) {
+            return const Text('Loading...');
+          } else {
             return ListView.builder(
-                itemCount: toDoList.length,
+                itemCount: _list.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Dismissible(
-                    key: Key(toDoList[index]['id'].toString()),
+                    key: Key(_list[index].id.toString()),
                     child: Card(
                       child: ListTile(
-                        title: Text(toDoList[index]['title']),
+                        title: Text(_list[index].title),
                         trailing: IconButton(
                           icon: const Icon(
                             Icons.delete,
                           ),
                           onPressed: () => {
                             setState(() {
-                              toDoList.removeAt(index);
+                              _list.removeAt(index);
                             })
                           },
                         ),
@@ -112,14 +78,12 @@ class _TodoState extends State<Todo> {
                     ),
                     onDismissed: (direction) {
                       setState(() {
-                        toDoList.removeAt(index);
+                        _list.removeAt(index);
                       });
                     },
                   );
                 });
           }
-          // spinner for uncompleted state
-          return Text('text');
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -130,13 +94,13 @@ class _TodoState extends State<Todo> {
                 return AlertDialog(
                   title: const Text('Добавить налог'),
                   content: TextField(onChanged: (String value) {
-                    userToDo = value;
+                    _newTaskTitle = value;
                   }),
                   actions: [
                     ElevatedButton(
                       onPressed: () {
                         setState(() => {
-                              addTask({'title': userToDo})
+                              _addTask(_newTaskTitle)
                             });
                         Navigator.of(context).pop();
                       },
