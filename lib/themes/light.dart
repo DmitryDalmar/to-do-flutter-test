@@ -8,7 +8,6 @@ class LightTheme implements CustomTheme {
         primarySwatch: Colors.amber,
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            // primary: const Color(0xfff6c944),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
