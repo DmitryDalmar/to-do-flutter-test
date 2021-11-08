@@ -49,6 +49,10 @@ Learn how to make stateful widgets in Flutter:
 
 
 ## Building & Deployment
+### CI/CD
+- [Continuous delivery with Flutter](https://flutter.dev/docs/deployment/cd)
+- [Fastlane (to automate deployments and releases)](https://docs.fastlane.tools)
+
 ### iOS
 - [Flutter guide - Build and release an iOS app](https://flutter.dev/docs/deployment/ios)
 - [Apple’s App Review Guidelines](https://developer.apple.com/app-store/review/)
